@@ -11,7 +11,7 @@ import cv2
 import groundingdino.datasets.transforms as T
 import numpy as np
 import torch
-from GroundingDINO.groundingdino.util.inference import load_model, predict
+from groundingdino.util.inference import load_model, predict
 from PIL import Image
 from huggingface_hub import hf_hub_download
 from segment_anything import SamPredictor, sam_model_registry
@@ -24,7 +24,7 @@ TEXT_THRESHOLD = float(os.getenv("TEXT_THRESHOLD", "0.25"))
 MIN_MASK_AREA = float(os.getenv("MIN_MASK_AREA", "200"))
 MODEL_CACHE_DIR = Path(os.getenv("MODEL_CACHE_DIR", "/opt/nuclio/models"))
 GROUNDING_REPO_ID = os.getenv("GROUNDING_REPO_ID", "ShilongLiu/GroundingDINO")
-GROUNDING_CONFIG = os.getenv("GROUNDING_CONFIG", "GroundingDINO_SwinT_OGC.py")
+GROUNDING_CONFIG = os.getenv("GROUNDING_CONFIG", "GroundingDINO_SwinT_OGC.cfg.py")
 GROUNDING_WEIGHTS = os.getenv("GROUNDING_WEIGHTS", "groundingdino_swint_ogc.pth")
 SAM_REPO_ID = os.getenv("SAM_REPO_ID")
 SAM_CHECKPOINT = os.getenv("SAM_CHECKPOINT", "sam_vit_h_4b8939.pth")
