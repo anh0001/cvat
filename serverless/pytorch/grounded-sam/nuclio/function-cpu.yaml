@@ -1,0 +1,41 @@
+metadata:
+  name: pytorch-grounded-sam
+  annotations:
+    name: Grounded-SAM (text → masks)
+    type: detector
+    framework: pytorch
+    spec: |
+      [
+        {"id": 1, "name": "cardboard"},
+        {"id": 2, "name": "paper"},
+        {"id": 3, "name": "shopping_bag"}
+      ]
+
+spec:
+  runtime: "python:3.9"
+  handler: "main:handler"
+  description: "Open-vocabulary: GroundingDINO boxes + SAM masks (CPU)"
+
+  build:
+    baseImage: python:3.9-slim
+    commands:
+      - apt-get update && apt-get install -y git libgl1 libglib2.0-0
+      - pip3 install --no-cache-dir --upgrade pip
+      - pip3 install --no-cache-dir numpy pillow opencv-python tqdm pycocotools
+      - pip3 install --no-cache-dir torch torchvision --index-url https://download.pytorch.org/whl/cpu
+      - pip3 install --no-cache-dir "git+https://github.com/IDEA-Research/GroundingDINO.git"
+      - pip3 install --no-cache-dir "git+https://github.com/facebookresearch/segment-anything.git"
+      - pip3 install --no-cache-dir huggingface_hub
+
+  env:
+    - name: LABELS
+      value: "cardboard,paper,shopping_bag"
+    - name: BOX_THRESHOLD
+      value: "0.35"
+    - name: TEXT_THRESHOLD
+      value: "0.25"
+
+  triggers:
+    http:
+      kind: http
+      maxWorkers: 1
