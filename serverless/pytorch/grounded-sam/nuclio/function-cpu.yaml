@@ -1,7 +1,7 @@
 metadata:
-  name: pytorch-grounded-sam
+  name: pytorch-grounded-sam-cpu
   annotations:
-    name: Grounded-SAM (text → masks)
+    name: Grounded-SAM (CPU)
     type: detector
     framework: pytorch
     spec: |
@@ -12,20 +12,19 @@ metadata:
       ]
 
 spec:
-  runtime: "python:3.9"
-  handler: "main:handler"
-  description: "Open-vocabulary: GroundingDINO boxes + SAM masks (CPU)"
+  runtime: python:3.9
+  handler: main:handler
+  description: "GroundingDINO + SAM inference without GPUs (slow)"
 
   build:
-    baseImage: python:3.9-slim
+    baseImage: python:3.10-slim
     commands:
-      - apt-get update && apt-get install -y git libgl1 libglib2.0-0
+      - apt-get update && apt-get install -y git python3-pip libglib2.0-0 libgl1 curl && rm -rf /var/lib/apt/lists/*
       - pip3 install --no-cache-dir --upgrade pip
-      - pip3 install --no-cache-dir numpy pillow opencv-python tqdm pycocotools
-      - pip3 install --no-cache-dir torch torchvision --index-url https://download.pytorch.org/whl/cpu
+      - pip3 install --no-cache-dir numpy pillow opencv-python-headless pycocotools shapely huggingface_hub
+      - pip3 install --no-cache-dir torch==2.1.2+cpu torchvision==0.16.2+cpu --index-url https://download.pytorch.org/whl/cpu
       - pip3 install --no-cache-dir "git+https://github.com/IDEA-Research/GroundingDINO.git"
       - pip3 install --no-cache-dir "git+https://github.com/facebookresearch/segment-anything.git"
-      - pip3 install --no-cache-dir huggingface_hub
 
   env:
     - name: LABELS
@@ -34,6 +33,14 @@ spec:
       value: "0.35"
     - name: TEXT_THRESHOLD
       value: "0.25"
+    - name: MIN_MASK_AREA
+      value: "200"
+    - name: MODEL_CACHE_DIR
+      value: "/opt/nuclio/models"
+    - name: SAM_MODEL_TYPE
+      value: "vit_h"
+    - name: SAM_CHECKPOINT_URL
+      value: "https://dl.fbaipublicfiles.com/segment_anything/sam_vit_h_4b8939.pth"
 
   triggers:
     http:

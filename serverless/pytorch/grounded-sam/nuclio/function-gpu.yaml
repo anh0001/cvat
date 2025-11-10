@@ -1,7 +1,7 @@
 metadata:
   name: pytorch-grounded-sam
   annotations:
-    name: Grounded-SAM (text → masks)
+    name: Grounded-SAM (text -> masks)
     type: detector
     framework: pytorch
     spec: |
@@ -12,21 +12,19 @@ metadata:
       ]
 
 spec:
-  runtime: "python:3.9"
-  handler: "main:handler"
-  description: "Open-vocabulary: GroundingDINO boxes + SAM masks"
+  runtime: python:3.9
+  handler: main:handler
+  description: "GroundingDINO boxes + Segment Anything masks for floor-item labels"
 
   build:
     baseImage: nvidia/cuda:11.8.0-cudnn8-runtime-ubuntu22.04
     commands:
-      - apt-get update && apt-get install -y git python3-pip libgl1 libglib2.0-0 build-essential
-      - ln -sf /usr/bin/python3 /usr/bin/python
+      - apt-get update && apt-get install -y git python3-pip libglib2.0-0 libgl1 curl build-essential && rm -rf /var/lib/apt/lists/*
       - pip3 install --no-cache-dir --upgrade pip setuptools wheel
-      - pip3 install --no-cache-dir numpy pillow opencv-python tqdm pycocotools
+      - pip3 install --no-cache-dir numpy pillow opencv-python-headless pycocotools shapely huggingface_hub
       - pip3 install --no-cache-dir "torch>=2.1,<2.4" "torchvision>=0.16,<0.19" --index-url https://download.pytorch.org/whl/cu118
-      - pip3 install --no-cache-dir huggingface_hub timm addict yapf supervision transformers
       - pip3 install --no-cache-dir "git+https://github.com/facebookresearch/segment-anything.git"
-      - pip3 install --no-cache-dir groundingdino-py
+      - git clone https://github.com/IDEA-Research/GroundingDINO.git /tmp/GroundingDINO && cd /tmp/GroundingDINO && pip3 install --no-cache-dir --no-build-isolation -e . && cd / && rm -rf /tmp/GroundingDINO
 
   env:
     - name: LABELS
@@ -35,6 +33,14 @@ spec:
       value: "0.35"
     - name: TEXT_THRESHOLD
       value: "0.25"
+    - name: MIN_MASK_AREA
+      value: "200"
+    - name: MODEL_CACHE_DIR
+      value: "/opt/nuclio/models"
+    - name: SAM_MODEL_TYPE
+      value: "vit_h"
+    - name: SAM_CHECKPOINT_URL
+      value: "https://dl.fbaipublicfiles.com/segment_anything/sam_vit_h_4b8939.pth"
 
   triggers:
     http:
