@@ -18,7 +18,7 @@ from segment_anything import SamPredictor, sam_model_registry
 from torchvision.ops import box_convert
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
-LABELS = [label.strip() for label in os.getenv("LABELS", "cardboard,paper,shopping_bag").split(",") if label.strip()]
+LABELS = [label.strip() for label in os.getenv("LABELS", "cardboard,paper,shopping_bag,cart,floor").split(",") if label.strip()]
 BOX_THRESHOLD = float(os.getenv("BOX_THRESHOLD", "0.35"))
 TEXT_THRESHOLD = float(os.getenv("TEXT_THRESHOLD", "0.25"))
 MIN_MASK_AREA = float(os.getenv("MIN_MASK_AREA", "200"))

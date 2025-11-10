@@ -8,7 +8,9 @@ metadata:
       [
         {"id": 1, "name": "cardboard"},
         {"id": 2, "name": "paper"},
-        {"id": 3, "name": "shopping_bag"}
+        {"id": 3, "name": "shopping_bag"},
+        {"id": 4, "name": "cart"},
+        {"id": 5, "name": "floor"}
       ]
 
 spec:
@@ -29,7 +31,7 @@ spec:
 
   env:
     - name: LABELS
-      value: "cardboard,paper,shopping_bag"
+      value: "cardboard,paper,shopping_bag,cart,floor"
     - name: BOX_THRESHOLD
       value: "0.35"
     - name: TEXT_THRESHOLD
